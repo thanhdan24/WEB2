@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Quản lý sản phẩm · ASP.NET Core + Axios</title>
+  <link rel="stylesheet" href="/style.css">
+  <script defer src="/axios.min.js"></script><script defer src="/app.js"></script>
+</head>
+<body>
+<main>
+  <header><span class="tag">BÀI THỰC HÀNH CRUD</span><h1>Quản lý sản phẩm</h1>
+  <p>ASP.NET Core API · Axios · EF Core · SQLite</p></header>
+  <p id="status" role="status" aria-live="polite">Đang tải dữ liệu…</p>
+  <section class="layout">
+    <form id="product-form">
+      <h2 id="form-title">Thêm sản phẩm</h2>
+      <label for="name">Tên sản phẩm</label><input id="name" maxlength="100" required placeholder="Ví dụ: Bàn phím">
+      <label for="description">Mô tả</label><textarea id="description" maxlength="500" rows="3"></textarea>
+      <label for="price">Giá (VNĐ)</label><input id="price" type="number" min="0" max="1000000000" step="0.01" required>
+      <label for="quantity">Số lượng</label><input id="quantity" type="number" min="0" max="1000000" step="1" required>
+      <div class="actions"><button id="save" type="submit">Thêm sản phẩm</button><button id="cancel" type="button" class="secondary">Làm mới form</button></div>
+    </form>
+    <section class="card"><div class="list-heading"><h2>Danh sách sản phẩm</h2><button id="reload" class="secondary" type="button">Tải lại (GET)</button></div>
+      <div class="scroll"><table><thead><tr><th>ID</th><th>Sản phẩm</th><th>Giá</th><th>Số lượng</th><th>Thao tác</th></tr></thead><tbody id="products"></tbody></table></div>
+      <p class="hint">Sửa: GET chi tiết → PUT. Xóa: DELETE. Mở F12 → Network để quan sát request.</p>
+    </section>
+  </section>
+</main>
+</body>
+</html>

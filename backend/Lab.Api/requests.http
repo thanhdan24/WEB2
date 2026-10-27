@@ -1,0 +1,32 @@
+@baseUrl = http://localhost:5080
+@id = 1
+
+### GET danh sách — 200
+GET {{baseUrl}}/api/products
+
+### POST — 201. Lấy ID trả về và cập nhật biến @id phía trên.
+POST {{baseUrl}}/api/products
+Content-Type: application/json
+
+{"name":"Bàn phím","description":"Bàn phím cơ","price":450000,"quantity":10}
+
+### GET chi tiết — 200
+GET {{baseUrl}}/api/products/{{id}}
+
+### PUT — 204, không có response body
+PUT {{baseUrl}}/api/products/{{id}}
+Content-Type: application/json
+
+{"name":"Bàn phím mới","description":"Đã cập nhật","price":500000,"quantity":8}
+
+### POST dữ liệu không hợp lệ — 400
+POST {{baseUrl}}/api/products
+Content-Type: application/json
+
+{"name":"","price":-1,"quantity":-2}
+
+### DELETE — 204
+DELETE {{baseUrl}}/api/products/{{id}}
+
+### GET sau khi xóa — 404
+GET {{baseUrl}}/api/products/{{id}}
