@@ -1,4 +1,4 @@
-# Bài tập 1 + 2: React + ASP.NET Core + SQLite
+# Bài tập 2 + 3: React + ASP.NET Core + SQLite
 
 Ứng dụng đăng ký, đăng nhập bằng email/password và quản lý sản phẩm bằng Axios. React Context giữ user hiện tại; localStorage lưu token, ngày hết hạn và user để duy trì phiên. Mật khẩu chỉ được lưu dưới dạng hash trong DB, không lưu trong localStorage.
 
