@@ -6,10 +6,13 @@ from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 
 BASE = (sys.argv[1] if len(sys.argv) > 1 else 'http://localhost:5080').rstrip('/')
+TOKEN = None
 
 def request(method, path, payload=None, headers=None):
     data = json.dumps(payload).encode() if payload is not None else None
     headers = dict(headers or {})
+    if TOKEN:
+        headers['Authorization'] = 'Bearer ' + TOKEN
     if data is not None:
         headers['Content-Type'] = 'application/json'
     req = Request(BASE + path, data=data, method=method, headers=headers)
@@ -29,6 +32,20 @@ def check(condition, message):
 
 product_id = None
 try:
+    check(request('GET', '/api/products')[0] == 401, 'Products require login')
+    email = 'smoke-' + uuid.uuid4().hex + '@example.com'
+    credentials = dict(email=email, password='SmokePassword123!')
+    for invalid in [dict(credentials, email='bad'), dict(credentials, password='short'), dict(credentials, password='        '), dict(credentials, password='x' * 129)]:
+        check(request('POST', '/api/auth/register', invalid)[0] == 400, 'Invalid registration rejected')
+    code, registered, _ = request('POST', '/api/auth/register', credentials)
+    check(code == 201 and registered['user']['email'] == email and 'passwordHash' not in registered['user'], 'Registration saves user and hides password hash')
+    check(request('POST', '/api/auth/register', dict(credentials, email=email.upper()))[0] == 409, 'Duplicate email rejected ignoring case')
+    check(request('POST', '/api/auth/login', dict(credentials, password='WrongPassword!'))[0] == 401, 'Wrong password rejected')
+    check(request('POST', '/api/auth/login', dict(credentials, email='missing-' + email))[0] == 401, 'Unknown email rejected')
+    code, session, _ = request('POST', '/api/auth/login', dict(credentials, email=email.upper()))
+    check(code == 200 and session['user'] == registered['user'], 'Login queries saved user ignoring email case')
+    TOKEN = session['token']
+    check(request('GET', '/api/auth/me')[1] == registered['user'], 'Session restores current user from DB')
     payload = dict(name='Smoke ' + uuid.uuid4().hex[:8], description='Kiểm thử', price=123.45, quantity=2)
     code, product, headers = request('POST', '/api/products', payload)
     check(code == 201, 'POST returns 201')
@@ -63,6 +80,12 @@ try:
         code, _, _ = request(method, endpoint, payload if method == 'PUT' else None)
         check(code == 404, method + ' deleted product returns 404')
     product_id = None
+    check(request('POST', '/api/auth/logout')[0] == 204, 'Logout succeeds')
+    check(request('GET', '/api/auth/me')[0] == 401, 'Revoked token cannot restore session')
+    check(request('GET', '/api/products')[0] == 401, 'Revoked token cannot access products')
+    TOKEN = 'F' * 64
+    check(request('GET', '/api/auth/me')[0] == 401, 'Forged token rejected')
+    TOKEN = None
     print('All HTTP checks passed.')
 finally:
     if product_id is not None:

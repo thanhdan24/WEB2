@@ -3,10 +3,12 @@ using Lab.Api.Dtos;
 using Lab.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Lab.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/products")]
 public class ProductsController(AppDbContext db) : ControllerBase
 {

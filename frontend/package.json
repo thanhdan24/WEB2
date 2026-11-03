@@ -4,12 +4,21 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node server.mjs"
+    "start": "vite --host 127.0.0.1 --port 5500 --strictPort",
+    "build": "vite build",
+    "test:e2e": "playwright test",
+    "preview": "vite preview --host 127.0.0.1 --port 5500 --strictPort"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22.12"
   },
   "dependencies": {
-    "axios": "^1.13.2"
+    "axios": "^1.13.2",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "vite": "^8.3.5"
   }
 }

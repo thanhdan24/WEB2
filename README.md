@@ -1,29 +1,43 @@
-# ASP.NET Core + Axios CRUD
+# Bài tập 1 + 2: React + ASP.NET Core + SQLite
 
-Mở **HUONG_DAN_CHI_TIET.html** bằng trình duyệt để đọc hướng dẫn tiếng Việt từ đầu đến cuối. Bản Markdown tương ứng: HUONG_DAN_CHI_TIET.md.
+Ứng dụng đăng ký, đăng nhập bằng email/password và quản lý sản phẩm bằng Axios. React Context giữ user hiện tại; localStorage lưu token, ngày hết hạn và user để duy trì phiên. Mật khẩu chỉ được lưu dưới dạng hash trong DB, không lưu trong localStorage.
 
-- Backend: ASP.NET Core 10, controller Products, EF Core 10.0.14, SQLite.
-- Frontend: HTML/CSS/JavaScript và Axios (cài qua npm).
-- Database được tạo bằng migration InitialCreate đã kèm sẵn.
-- Cổng API: http://localhost:5080. Cổng frontend: http://localhost:5500.
-- Cài .NET 10 SDK và Node.js LTS trước. Mở hai terminal để chạy hai server.
+## Chạy ứng dụng
 
-Từ thư mục gốc:
+Yêu cầu .NET 10 SDK, Node.js 22.12 trở lên (hoặc Node.js 24), Microsoft Edge nếu chạy kiểm thử giao diện.
+
+Tại thư mục gốc, chạy backend:
 
 ```powershell
 dotnet tool restore
-cd .\backend\Lab.Api
-dotnet restore
-dotnet ef database update
-dotnet run --launch-profile http
+dotnet restore backend/Lab.Api
+dotnet ef database update --project backend/Lab.Api
+dotnet run --project backend/Lab.Api --launch-profile http
 ```
 
-Terminal thứ hai:
+Mở terminal thứ hai:
 
 ```powershell
-cd D:\ASP.NET-Core-Axios-CRUD\frontend
-npm ci
-npm start
+cd frontend
+npm.cmd ci
+npm.cmd start
 ```
 
-Thay đường dẫn D: bằng nơi bạn giải nén. Mở http://localhost:5500. Không cần chạy lại `migrations add InitialCreate` vì migration đã tồn tại.
+Mở http://localhost:5500. Chọn **Chưa có tài khoản? Đăng ký**, nhập email, mật khẩu và xác nhận mật khẩu. Sau khi đăng ký thành công, đăng nhập để quản lý sản phẩm. API chạy tại http://localhost:5080.
+
+Migration `AddUserAuthentication` bổ sung `Users` và `UserSessions`, giữ nguyên bảng sản phẩm có sẵn. Cần chạy lệnh cập nhật DB trước khi khởi động API. Danh sách sản phẩm hiện dùng chung cho các tài khoản đã đăng nhập.
+
+## Kiểm thử
+
+Khi API đang chạy:
+
+```powershell
+python scripts/smoke_test.py
+cd frontend
+npm.cmd run build
+npm.cmd run test:e2e
+```
+
+Kiểm thử giao diện tự khởi động frontend tại cổng 5500; dừng frontend đang chạy trước khi chạy lệnh này. Các kiểm thử tạo tài khoản email ngẫu nhiên và xóa sản phẩm do chúng tạo sau khi hoàn tất thành công.
+
+Chi tiết luồng, API và các file thực hiện: [HUONG_DAN_CHI_TIET.md](HUONG_DAN_CHI_TIET.md).
